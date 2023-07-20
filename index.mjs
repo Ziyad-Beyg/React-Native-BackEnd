@@ -65,7 +65,7 @@ app.put("/edituser/:id", async (req, res) => {
     const updatedUser = await User.findById(id);
     res.status(200).json(updatedUser);
   } catch (e) {
-    res.status(500).json({ message: e.message });   
+    res.status(500).json({ message: e.message });
   }
 });
 
@@ -113,19 +113,20 @@ app.post("/login", (req, res) => {
     User.findOne({ email })
       .then((user) => {
         bcrypt.compare(password, user.password, (err, result) => {
-          if (err || !result)
-            return res.status(401).send(err || "Wrong Password");
-          const token = jwt.sign(
-            { id: user._id, username: user.username },
-            process.env.JWT_SECRET,
-            { expiresIn: "1h" }
-          );
+          if (err || !result) {
+            return res.status(401).send(err || "Invalid Password");
+          }
+          // const token = jwt.sign(
+          //   { id: user._id, username: user.username },
+          //   process.env.JWT_SECRET,
+          //   { expiresIn: "1h" }
+          // );
           //   const refreshToken = jwt.sign(
           //     { id: user._id, username: user.username },
           //     process.env.JWT_REFRESH_SECRET
           //   );
           const { password, ...restParams } = user._doc;
-          return res.status(201).send({ user: restParams, token });
+          return res.status(201).send({ user: restParams });
         });
       })
       .catch((err) => {
